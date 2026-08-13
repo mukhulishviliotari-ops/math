@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>C++ Math Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --accent-color: #6366f1;
+        --accent-hover: #4f46e5;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --border-color: #334155;
+        --console-bg: #020617;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 1rem;
+      }
+
+      .app-container {
+        width: 100%;
+        max-width: 800px;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      header {
+        text-align: center;
+      }
+
+      header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      header p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-top: 0.25rem;
+      }
+
+      .card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .controls-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1rem;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background-color: var(--accent-color);
+        color: #ffffff;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 0.625rem 1.25rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .btn:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+
+      .btn-secondary {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+      }
+
+      .btn-secondary:hover {
+        background-color: var(--border-color);
+      }
+
+      .answer-form {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+      }
+
+      .answer-input {
+        flex: 1;
+        background-color: var(--console-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 0.625rem 1rem;
+        color: var(--text-main);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1rem;
+        outline: none;
+      }
+
+      .answer-input:focus {
+        border-color: var(--accent-color);
+      }
+
+      .console-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .console-header {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+      }
+
+      textarea#output {
+        width: 100%;
+        height: 200px;
+        background-color: var(--console-bg);
+        color: #38bdf8;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        padding: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        resize: vertical;
+        outline: none;
+      }
+
+      .status-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+
+      .spinner {
+        height: 18px;
+        width: 18px;
+        border: 2px solid var(--border-color);
+        border-top-color: var(--accent-color);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      progress {
+        width: 100%;
+        height: 6px;
+        appearance: none;
+        border: none;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      progress::-webkit-progress-bar {
+        background-color: var(--border-color);
+      }
+
+      progress::-webkit-progress-value {
+        background-color: var(--accent-color);
+      }
+
+      canvas.emscripten {
+        display: none; 
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="app-container">
+      <header>
+        <h1>C++ Math Equations</h1>
+
+      </header>
+
+      <main class="card">
+        <div class="controls-bar">
+          <div class="button-group">
+            <button class="btn" onclick="generateNewEquation()">New Equation</button>
+            <button class="btn btn-secondary" onclick="clearOutput()">Clear Terminal</button>
+          </div>
+        </div>
+
+        <div class="status-bar">
+          <div class="spinner" id="spinner"></div>
+          <span id="status">Loading WASM module...</span>
+        </div>
+        <progress value="0" max="100" id="progress" hidden></progress>
+
+        <form class="answer-form" onsubmit="submitAnswer(event)">
+          <input type="number" id="player-input" class="answer-input" placeholder="Enter your answer..." autocomplete="off" />
+          <button type="submit" class="btn">Submit Answer</button>
+        </form>
+
+        <div class="console-container">
+          <div class="console-header">Game Terminal Output</div>
+          <textarea id="output" readonly></textarea>
+        </div>
+
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+      </main>
+    </div>
+
+    <script type="text/javascript">
+      var statusElement = document.getElementById('status');
+      var progressElement = document.getElementById('progress');
+      var spinnerElement = document.getElementById('spinner');
+      var canvasElement = document.getElementById('canvas');
+      var outputElement = document.getElementById('output');
+
+      function clearOutput() {
+        if (outputElement) outputElement.value = '';
+      }
+
+      function generateNewEquation() {
+        if (typeof Module._generate_equation === 'function') {
+          Module._generate_equation();
+        } else {
+          generate_equation_js();
+        }
+      }
+
+      function submitAnswer(e) {
+        if (e) e.preventDefault();
+        var inputElem = document.getElementById('player-input');
+        var val = parseInt(inputElem.value, 10);
+        if (!isNaN(val)) {
+          if (typeof Module._check_answer === 'function') {
+            Module._check_answer(val);
+          } else {
+            check_answer_js(val);
+          }
+          inputElem.value = '';
+        }
+      }
+
+      // Prevents the browser alert pop-up when reloading the page
+      canvasElement.addEventListener('webglcontextlost', (e) => {
+        console.warn('WebGL context lost.');
+        e.preventDefault();
+      }, false);
+
+      var setStatus = (text) => {
+        if (!setStatus.last) setStatus.last = { time: Date.now(), text: '' };
+        if (text === setStatus.last.text) return;
+        var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+        var now = Date.now();
+        if (m && now - setStatus.last.time < 30) return;
+        setStatus.last.time = now;
+        setStatus.last.text = text;
+        if (m) {
+          text = m[1];
+          progressElement.value = parseInt(m[2]) * 100;
+          progressElement.max = parseInt(m[4]) * 100;
+          progressElement.hidden = false;
+          spinnerElement.hidden = false;
+        } else {
+          progressElement.value = null;
+          progressElement.max = null;
+          progressElement.hidden = true;
+          if (!text) spinnerElement.style.display = 'none';
+        }
+        statusElement.innerHTML = text;
+      };
+
+      var Module = {
+        print(...args) {
+          if (outputElement) {
+            var text = args.join(' ');
+            outputElement.value += text + "\n";
+            outputElement.scrollTop = outputElement.scrollHeight;
+          }
+        },
+        canvas: canvasElement,
+        setStatus: setStatus,
+        totalDependencies: 0,
+        monitorRunDependencies(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'Ready');
+        }
+      };
+
+      // JS fallback when WASM isn't compiled / available
+      var expectedResultJS = null;
+      function generate_equation_js() {
+        var num1 = Math.floor(Math.random() * 300) + 1;
+        var num2 = Math.floor(Math.random() * 300) + 1;
+        var op = Math.random() < 0.5 ? '+' : '-';
+        if (op === '+') expectedResultJS = num1 + num2;
+        else expectedResultJS = num1 - num2;
+        var text = 'Solve: ' + num1 + ' ' + op + ' ' + num2 + ' = ?';
+        if (outputElement) { outputElement.value += text + "\n"; outputElement.scrollTop = outputElement.scrollHeight; }
+      }
+
+      function check_answer_js(playerAnswer) {
+        if (expectedResultJS === null) {
+          if (outputElement) { outputElement.value += 'No equation generated.\n'; }
+          return;
+        }
+        if (playerAnswer === expectedResultJS) {
+          if (outputElement) { outputElement.value += '\nCorrect! Great job!\n'; }
+        } else {
+          if (outputElement) { outputElement.value += '\nIncorrect! The correct answer was: ' + expectedResultJS + '\n'; }
+        }
+        expectedResultJS = null;
+      }
+
+      setStatus('Downloading...');
+      window.onerror = window.onunhandledrejection = () => {
+        setStatus('Exception thrown, see console log.');
+        spinnerElement.style.display = 'none';
+      };
+    </script>
+    <script async type="text/javascript" src="index.js"></script>
+  </body>
+</html>
